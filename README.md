@@ -45,11 +45,20 @@ The project follows a hexagonal/layered architecture:
 ## API Documentation
 Once running, the Swagger UI is available at: `http://localhost:8080/swagger-ui.html`
 
-## Assignment Requirements Coverage
-- [x] Clean backend design
-- [x] Correct handling of concurrency
-- [x] Good database design
-- [x] Proper timezone handling
-- [x] Thoughtful error handling
-- [x] Conflict detection logic
-- [x] 10% Scope Extension: Waitlist and Idempotency
+## CI/CD Pipeline
+The project includes a GitHub Actions pipeline that:
+- Automatically runs unit tests on every push and pull request.
+- Builds a Docker image on merges to the `main` branch.
+- Pushes the image to DockerHub.
+
+### GitHub Secrets Required:
+- `DOCKERHUB_USERNAME`: Your DockerHub username.
+- `DOCKERHUB_TOKEN`: Your DockerHub personal access token.
+
+## Dockerization
+A `Dockerfile` is provided for containerizing the application.
+To build manually:
+```bash
+mvn clean package
+docker build -t class-booking-system ./class-booking-system
+```
