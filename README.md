@@ -13,27 +13,54 @@ A production-ready backend service for a global live-learning platform. This sys
 
 ## Tech Stack
 - **Language**: Java 17
-- **Framework**: Spring Boot 3.3.x
-- **Database**: PostgreSQL 15
+- **Framework**: Spring Boot 3.3.5
+- **Database**: PostgreSQL
 - **ORM**: Spring Data JPA
 - **Migration**: Liquibase
-- **Testing**: JUnit 5, Mockito, Testcontainers
+- **Documentation**: SpringDoc OpenAPI (Swagger)
+- **Containerization**: Docker & Docker Compose
+- **Utilities**: Lombok
 
 ## Getting Started
 
 ### Prerequisites
-- JDK 17
-- Docker (for PostgreSQL)
+- JDK 17+
 - Maven 3.8+
+- Docker and Docker Compose
+
+### Environment Variables Required
+The application can be configured using the following environment variables:
+
+| Variable      | Description                      | Default Value                                |
+|---------------|----------------------------------|----------------------------------------------|
+| `DB_URL`      | PostgreSQL JDBC URL              | `jdbc:postgresql://localhost:5432/undoschool_db` |
+| `DB_USERNAME` | Database username                | `postgres`                                   |
+| `DB_PASSWORD` | Database password                | `postgres`                                   |
+| `SERVER_PORT` | Port on which the server runs    | `8080`                                       |
 
 ### Running Locally
-1. Start the database:
+
+#### Option 1: Docker Compose (Recommended)
+This is the easiest way to run the application as it sets up both the application and the PostgreSQL database.
+
+1. Navigate to the project directory:
    ```bash
-   docker compose up -d
+   cd class-booking-system
    ```
+2. Build the project:
+   ```bash
+   ./mvnw clean package -DskipTests
+   ```
+3. Start the services:
+   ```bash
+   docker-compose up --build
+   ```
+
+#### Option 2: Maven
+1. Ensure a PostgreSQL instance is running with a database named `undoschool_db`.
 2. Run the application:
    ```bash
-   mvn spring-boot:run
+   ./mvnw spring-boot:run
    ```
 
 ## Architecture
@@ -43,7 +70,37 @@ The project follows a hexagonal/layered architecture:
 - **Persistence Layer**: Spring Data repositories for PostgreSQL interaction.
 
 ## API Documentation
-Once running, the Swagger UI is available at: `http://localhost:8080/swagger-ui.html`
+Once running, the interactive Swagger UI is available at: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+### Key Endpoints Overview
+| Role       | Endpoint                                     | Method | Description                                |
+|------------|----------------------------------------------|--------|--------------------------------------------|
+| Management | `/api/v1/courses`                            | POST   | Create a new course                        |
+| Management | `/api/v1/teachers`                           | POST   | Register a new teacher                     |
+| Management | `/api/v1/parents`                            | POST   | Register a new student/parent              |
+| Teacher    | `/api/v1/teachers/offerings`                 | POST   | Create a course offering (Header: `X-Teacher-Id`) |
+| Teacher    | `/api/v1/teachers/offerings/{id}/sessions` | POST   | Add sessions to an offering (Header: `X-Teacher-Id`) |
+| Parent     | `/api/v1/parents/offerings`                  | GET    | List all available offerings               |
+| Parent     | `/api/v1/parents/bookings`                   | POST   | Book an offering (Header: `X-Student-Id`)  |
+
+## Database Schema Overview
+The database consists of the following main tables:
+- **`courses`**: Stores base course information.
+- **`teachers`**: Teacher details.
+- **`students`**: Student details.
+- **`offerings`**: Instances of a course taught by a teacher, with capacity limits.
+- **`sessions`**: Time slots associated with an offering.
+- **`bookings`**: Student booking records (CONFIRMED/WAITLISTED).
+
+## Concurrency & Timezone Handling
+
+### Concurrency
+- **Pessimistic Locking**: Uses `PESSIMISTIC_WRITE` on Offering records during booking to prevent race conditions.
+- **Idempotency**: Requires a unique `idempotency_key` for booking requests to handle network retries safely.
+
+### Timezones
+- **Storage**: Uses `TIMESTAMPTZ` in PostgreSQL to store absolute points in time.
+- **Application**: Uses `OffsetDateTime` in Java to preserve client offset information and ensure consistency across regions.
 
 ## CI/CD Pipeline
 The project includes a GitHub Actions pipeline that:
@@ -55,12 +112,10 @@ The project includes a GitHub Actions pipeline that:
 - `DOCKERHUB_USERNAME`: Your DockerHub username.
 - `DOCKERHUB_TOKEN`: Your DockerHub personal access token.
 
-## Running with Docker
+## Dockerization
+The official image is available on DockerHub: `mahangarerohan1203/class-booking-system`
 
-### Option 1: DockerHub Image (Recommended)
-This is the easiest way to run the application as it does not require a local Java/Maven setup. 
-Ensure you have a PostgreSQL instance running (you can use the `db` service from our `docker-compose.yml`).
-
+### Running with Docker Image
 ```bash
 docker run -p 8080:8080 \
   --add-host=host.docker.internal:host-gateway \
@@ -69,17 +124,3 @@ docker run -p 8080:8080 \
   -e DB_PASSWORD=postgres \
   mahangarerohan1203/class-booking-system:latest
 ```
-
-### Option 2: Docker Compose
-Builds and starts both the application and the database from source.
-```bash
-# Navigate to the project directory
-cd class-booking-system
-
-# Build and start services
-docker-compose up --build -d
-```
-
-## Dockerization
-A `Dockerfile` is provided for containerizing the application. 
-The official image is available on DockerHub: `mahangarerohan1203/class-booking-system`
