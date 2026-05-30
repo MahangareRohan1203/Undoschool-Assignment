@@ -22,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ParentServiceTest {
+class ParentServiceImplTest {
 
     @Mock
     private OfferingRepository offeringRepository;
@@ -32,7 +32,7 @@ class ParentServiceTest {
     private StudentRepository studentRepository;
 
     @InjectMocks
-    private ParentService parentService;
+    private ParentServiceImpl parentService;
 
     private Student student;
     private Offering offering;
