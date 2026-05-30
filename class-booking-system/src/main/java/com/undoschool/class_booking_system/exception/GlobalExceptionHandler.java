@@ -8,11 +8,28 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolationException(jakarta.validation.ConstraintViolationException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+
+        List<String> errorMessages = new ArrayList<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            errorMessages.add(violation.getMessage());
+        });
+        
+        body.put("error", String.join(", ", errorMessages));
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -20,13 +37,19 @@ public class GlobalExceptionHandler {
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.BAD_REQUEST.value());
         
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+        List<String> errorMessages = new ArrayList<>();
+        
+        // Handle field-level errors
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+            errorMessages.add(error.getField() + ": " + error.getDefaultMessage());
         });
-        body.put("errors", errors);
+        
+        // Handle class-level errors (like @ValidSessionRange)
+        ex.getBindingResult().getGlobalErrors().forEach((error) -> {
+            errorMessages.add(error.getDefaultMessage());
+        });
+        
+        body.put("error", String.join(", ", errorMessages));
         
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
