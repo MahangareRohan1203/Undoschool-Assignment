@@ -13,8 +13,8 @@ A production-ready backend service for a global live-learning platform. This sys
 
 ## Tech Stack
 - **Language**: Java 17
-- **Framework**: Spring Boot 3.2+
-- **Database**: PostgreSQL
+- **Framework**: Spring Boot 3.3.x
+- **Database**: PostgreSQL 15
 - **ORM**: Spring Data JPA
 - **Migration**: Liquibase
 - **Testing**: JUnit 5, Mockito, Testcontainers
@@ -55,17 +55,29 @@ The project includes a GitHub Actions pipeline that:
 - `DOCKERHUB_USERNAME`: Your DockerHub username.
 - `DOCKERHUB_TOKEN`: Your DockerHub personal access token.
 
+## Running with Docker
+
+### Option 1: Docker Compose (Recommended)
+This will start both the PostgreSQL database and the application together.
+```bash
+# Navigate to the project directory
+cd class-booking-system
+
+# Start the services
+docker-compose up -d
+```
+
+### Option 2: Running the DockerHub Image
+If you want to run the application image standalone, ensure you have a PostgreSQL instance running and provide the connection details via environment variables.
+
+```bash
+docker run -p 8080:8080 \
+  -e DB_URL=jdbc:postgresql://host.docker.internal:5432/undoschool_db \
+  -e DB_USERNAME=postgres \
+  -e DB_PASSWORD=postgres \
+  mahangarerohan1203/class-booking-system:latest
+```
+
 ## Dockerization
 A `Dockerfile` is provided for containerizing the application. 
 The official image is available on DockerHub: `mahangarerohan1203/class-booking-system`
-
-### Pull the image:
-```bash
-docker pull mahangarerohan1203/class-booking-system:latest
-```
-
-### Build manually:
-```bash
-mvn clean package
-docker build -t class-booking-system ./class-booking-system
-```
