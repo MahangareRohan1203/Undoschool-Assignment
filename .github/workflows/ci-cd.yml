@@ -3,8 +3,16 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ "main", "feature/*" ]
+    paths:
+      - 'class-booking-system/src/main/**'
+      - 'class-booking-system/pom.xml'
+      - 'class-booking-system/Dockerfile'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'class-booking-system/src/main/**'
+      - 'class-booking-system/pom.xml'
+      - 'class-booking-system/Dockerfile'
 
 jobs:
   build-and-test:
