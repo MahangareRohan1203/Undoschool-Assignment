@@ -57,25 +57,27 @@ The project includes a GitHub Actions pipeline that:
 
 ## Running with Docker
 
-### Option 1: Docker Compose (Recommended)
-This will start both the PostgreSQL database and the application together.
-```bash
-# Navigate to the project directory
-cd class-booking-system
-
-# Start the services
-docker-compose up -d
-```
-
-### Option 2: Running the DockerHub Image
-If you want to run the application image standalone, ensure you have a PostgreSQL instance running and provide the connection details via environment variables.
+### Option 1: DockerHub Image (Recommended)
+This is the easiest way to run the application as it does not require a local Java/Maven setup. 
+Ensure you have a PostgreSQL instance running (you can use the `db` service from our `docker-compose.yml`).
 
 ```bash
 docker run -p 8080:8080 \
+  --add-host=host.docker.internal:host-gateway \
   -e DB_URL=jdbc:postgresql://host.docker.internal:5432/undoschool_db \
   -e DB_USERNAME=postgres \
   -e DB_PASSWORD=postgres \
   mahangarerohan1203/class-booking-system:latest
+```
+
+### Option 2: Docker Compose
+Builds and starts both the application and the database from source.
+```bash
+# Navigate to the project directory
+cd class-booking-system
+
+# Build and start services
+docker-compose up --build -d
 ```
 
 ## Dockerization
