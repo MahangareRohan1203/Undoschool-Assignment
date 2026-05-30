@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 20260530-01-v2
+      id: 20260530-01-v1
       author: Rohan Mahangare
       changes:
         - createTable:
