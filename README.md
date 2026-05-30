@@ -13,8 +13,8 @@ A production-ready backend service for a global live-learning platform. This sys
 
 ## Tech Stack
 - **Language**: Java 17
-- **Framework**: Spring Boot 3.2+
-- **Database**: PostgreSQL
+- **Framework**: Spring Boot 3.3.x
+- **Database**: PostgreSQL 15
 - **ORM**: Spring Data JPA
 - **Migration**: Liquibase
 - **Testing**: JUnit 5, Mockito, Testcontainers
