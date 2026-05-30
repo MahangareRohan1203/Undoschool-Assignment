@@ -56,8 +56,15 @@ The project includes a GitHub Actions pipeline that:
 - `DOCKERHUB_TOKEN`: Your DockerHub personal access token.
 
 ## Dockerization
-A `Dockerfile` is provided for containerizing the application.
-To build manually:
+A `Dockerfile` is provided for containerizing the application. 
+The official image is available on DockerHub: `mahangarerohan1203/class-booking-system`
+
+### Pull the image:
+```bash
+docker pull mahangarerohan1203/class-booking-system:latest
+```
+
+### Build manually:
 ```bash
 mvn clean package
 docker build -t class-booking-system ./class-booking-system
