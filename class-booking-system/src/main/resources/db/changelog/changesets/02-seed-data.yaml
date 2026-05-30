@@ -1,0 +1,90 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260530-02-seed-data
+      author: Rohan Mahangare
+      changes:
+        # Courses
+        - insert:
+            tableName: courses
+            columns:
+              - column: { name: title, value: "Full Stack Java Web Development" }
+              - column: { name: description, value: "Complete course on Spring Boot and React" }
+        - insert:
+            tableName: courses
+            columns:
+              - column: { name: title, value: "Python for Data Science" }
+              - column: { name: description, value: "Machine Learning with Python" }
+
+        # Teachers
+        - insert:
+            tableName: teachers
+            columns:
+              - column: { name: name, value: "John Smith (India)" }
+              - column: { name: email, value: "john.india@undoschool.com" }
+        - insert:
+            tableName: teachers
+            columns:
+              - column: { name: name, value: "Emma Wilson (UK)" }
+              - column: { name: email, value: "emma.uk@undoschool.com" }
+
+        # Students
+        - insert:
+            tableName: students
+            columns:
+              - column: { name: name, value: "Alice Student" }
+              - column: { name: email, value: "alice@example.com" }
+        - insert:
+            tableName: students
+            columns:
+              - column: { name: name, value: "Bob Student" }
+              - column: { name: email, value: "bob@example.com" }
+
+        # Offering 1: Mon-Wed Evening IST (18:00 - 19:30 IST)
+        - insert:
+            tableName: offerings
+            columns:
+              - column: { name: course_id, value: 1 }
+              - column: { name: teacher_id, value: 1 }
+              - column: { name: title, value: "Java Evening Batch (IST)" }
+              - column: { name: capacity, value: 10 }
+              - column: { name: status, value: "ACTIVE" }
+        - insert:
+            tableName: sessions
+            columns:
+              - column: { name: offering_id, value: 1 }
+              - column: { name: start_time, value: "2026-06-01T18:00:00+05:30" }
+              - column: { name: end_time, value: "2026-06-01T19:30:00+05:30" }
+
+        # Offering 2: PARTIAL OVERLAP (19:00 - 20:30 IST)
+        # Clashes with Offering 1 between 19:00 and 19:30
+        - insert:
+            tableName: offerings
+            columns:
+              - column: { name: course_id, value: 2 }
+              - column: { name: teacher_id, value: 2 }
+              - column: { name: title, value: "Python Partial Overlap Batch" }
+              - column: { name: capacity, value: 10 }
+              - column: { name: status, value: "ACTIVE" }
+        - insert:
+            tableName: sessions
+            columns:
+              - column: { name: offering_id, value: 2 }
+              - column: { name: start_time, value: "2026-06-01T19:00:00+05:30" }
+              - column: { name: end_time, value: "2026-06-01T20:30:00+05:30" }
+
+        # Offering 3: EXACT OVERLAP (Different Timezone string)
+        # 12:30 UTC is exactly 18:00 IST. This tests absolute time matching.
+        - insert:
+            tableName: offerings
+            columns:
+              - column: { name: course_id, value: 1 }
+              - column: { name: teacher_id, value: 2 }
+              - column: { name: title, value: "Java Global Conflict (UTC)" }
+              - column: { name: capacity, value: 10 }
+              - column: { name: status, value: "ACTIVE" }
+        - insert:
+            tableName: sessions
+            columns:
+              - column: { name: offering_id, value: 3 }
+              - column: { name: start_time, value: "2026-06-01T12:30:00Z" }
+              - column: { name: end_time, value: "2026-06-01T14:00:00Z" }
