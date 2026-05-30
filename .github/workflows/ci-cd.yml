@@ -35,9 +35,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
           
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h 127.0.0.1 -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
       - name: Build and Test
         env:
-          DB_URL: jdbc:postgresql://localhost:5432/undoschool_db
+          DB_URL: jdbc:postgresql://127.0.0.1:5432/undoschool_db
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
         run: |
